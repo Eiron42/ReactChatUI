@@ -9,45 +9,108 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
-  View
+  TextInput,
+  View,
+  TouchableOpacity
 } from 'react-native';
 
 export default class ReactChatUI extends Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.android.js
-        </Text>
-        <Text style={styles.instructions}>
-          Double tap R on your keyboard to reload,{'\n'}
-          Shake or press menu button for dev menu
-        </Text>
-      </View>
-    );
-  }
+    constructor() {
+        super()
+
+        this.state = {
+            lastId: 4,
+            userId: 1,
+            message: '',
+            messages: [
+                {
+                    id: 1,
+                    userId: 1,
+                    content: "Hello !"
+                },
+                {
+                    id: 2,
+                    userId: 2,
+                    content: "Hi !"
+                },
+                {
+                    id: 3,
+                    userId: 1,
+                    content: "How are you ?"
+                },
+                {
+                    id: 4,
+                    userId: 2,
+                    content: "Fine, and you ?"
+                }
+            ]
+        }
+    }
+
+    send() {
+        if (this.state.message != '') {
+            this.state.lastId += 1
+            this.state.messages.push({
+                id: this.state.lastId,
+                userId: this.state.userId,
+                content: this.state.message
+            })
+            this.state.message = ''
+            this.refs['message'].setNativeProps({text: ''})
+
+            this.setState(this.state)
+        }
+    }
+
+    render() {
+        return (
+            <View style={styles.container}>
+                <View style={styles.wrapper}>
+                    {
+                        this.state.messages.map((message) => {
+                            return (
+                                <Text key={message.id} style={message.userId === 1 ? styles.userMessages : styles.otherUserMessages}>{message.content}</Text>
+                            )
+                        })
+                    }
+                </View>
+                <TextInput
+                    style={{height: 40, backgroundColor:"grey"}}
+                    placeholder="Type your message"
+                    ref= "message"
+                    onChangeText={(message) => this.state.message = message}
+                />
+            <TouchableOpacity style={styles.submitButton} onPress={() => this.send()}>
+                    <Text>Send</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
+    container: {
+        flex: 1,
+        backgroundColor: 'aliceblue',
+    },
+    wrapper: {
+        marginHorizontal: 10
+    },
+    userMessages: {
+        backgroundColor: 'cornflowerblue',
+        marginBottom: 10,
+        marginLeft: 70,
+        padding: 5
+    },
+    otherUserMessages: {
+        backgroundColor: 'darkseagreen',
+        marginBottom: 10,
+        marginRight: 70,
+        padding: 5
+    },
+    submitButton: {
+        marginTop: 10
+    }
 });
 
 AppRegistry.registerComponent('ReactChatUI', () => ReactChatUI);
